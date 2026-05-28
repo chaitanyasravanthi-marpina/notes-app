@@ -13,7 +13,9 @@ import express from 'express'
 import cors from 'cors'
 import connectDB from './config/db.js'   
 import authRoutes from './routes/authRoutes.js' 
-import { protect } from './middleware/authMiddleware.js'
+
+import noteRoutes from './routes/noteRoutes.js' 
+
 
 // Step 4: Create the Express application
 // This 'app' object is our entire server
@@ -33,18 +35,13 @@ connectDB()
 
 // Mount auth routes — all auth URLs start with /api/auth
 app.use('/api/auth', authRoutes)    
+app.use('/api/notes', noteRoutes)
 // Step 6: A test route to confirm the server is working
 // We'll replace this with real routes later
 app.get('/', (req, res) => {
   res.json({ message: 'Notes API is running' })
 })
-// Protected test route — only logged in users can access
-app.get('/api/protected', protect, (req, res) => {
-  res.json({
-    success: true,
-    message: `Hello ${req.user.name}, you are authenticated`
-  })
-})
+
 // Step 7: Read port from .env, fallback to 5000 if not set
 const PORT = process.env.PORT || 5000
 
