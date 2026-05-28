@@ -11,7 +11,9 @@ import express from 'express'
 // This allows our React frontend (on port 3000) to talk to this
 // backend (on port 5000). Without this, the browser blocks the request.
 import cors from 'cors'
-import connectDB from './config/db.js'   //add this
+import connectDB from './config/db.js'   
+import authRoutes from './routes/authRoutes.js' 
+import { protect } from './middleware/authMiddleware.js'
 
 // Step 4: Create the Express application
 // This 'app' object is our entire server
@@ -29,12 +31,20 @@ app.use(cors())
 // ← ADD THIS — connect to database when server starts
 connectDB()
 
+// Mount auth routes — all auth URLs start with /api/auth
+app.use('/api/auth', authRoutes)    
 // Step 6: A test route to confirm the server is working
 // We'll replace this with real routes later
 app.get('/', (req, res) => {
   res.json({ message: 'Notes API is running' })
 })
-
+// Protected test route — only logged in users can access
+app.get('/api/protected', protect, (req, res) => {
+  res.json({
+    success: true,
+    message: `Hello ${req.user.name}, you are authenticated`
+  })
+})
 // Step 7: Read port from .env, fallback to 5000 if not set
 const PORT = process.env.PORT || 5000
 
