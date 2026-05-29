@@ -12,6 +12,7 @@ import {
   permanentDeleteNote
 } from '../controllers/noteController.js'
 import { protect } from '../middleware/authmiddleware.js'
+import { getArchivedNotes } from '../controllers/noteController.js'
 
 const router = express.Router()
 
@@ -21,6 +22,7 @@ const router = express.Router()
 router.post('/',              protect, createNote)
 router.get('/',               protect, getNotes)
 router.get('/trash',          protect, getTrashedNotes)
+router.get('/archived', protect, getArchivedNotes)
 router.get('/:id',            protect, getNoteById)
 router.put('/:id',            protect, updateNote)
 router.delete('/:id',         protect, deleteNote)

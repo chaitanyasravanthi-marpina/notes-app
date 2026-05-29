@@ -406,3 +406,23 @@ export const permanentDeleteNote = async (req, res) => {
     })
   }
 }
+export const getArchivedNotes = async (req, res) => {
+  try {
+    const notes = await Note.find({
+      user: req.user.id,
+      isArchived: true,
+      isDeleted: false
+    }).sort({ createdAt: -1 })
+
+    res.status(200).json({ 
+      success: true, 
+      count: notes.length, 
+      notes 
+    })
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    })
+  }
+}
