@@ -1,4 +1,4 @@
-const NoteCard = ({ note, onPin, onArchive, onDelete }) => {
+const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
 
     // Format date nicely
     const formatDate = (dateString) => {
@@ -53,6 +53,16 @@ const NoteCard = ({ note, onPin, onArchive, onDelete }) => {
                 </span>
 
                 <div style={styles.actions}>
+
+                    {/* Edit button — passes full note object to parent */}
+                    <button
+                        onClick={() => onEdit(note)}
+                        style={styles.actionBtn}
+                        title="Edit"
+                    >
+                        ✏️
+                    </button>
+
                     {/* Pin button */}
                     <button
                         onClick={() => onPin(note._id)}
@@ -79,6 +89,7 @@ const NoteCard = ({ note, onPin, onArchive, onDelete }) => {
                     >
                         🗑️
                     </button>
+
                 </div>
             </div>
 

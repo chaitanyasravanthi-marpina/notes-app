@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Navbar from '../components/Navbar'
 import NoteCard from '../components/NoteCard'
+import EditNoteModal from '../components/EditNoteModal'
 import {
     getNotes,
     createNote,
@@ -11,13 +12,13 @@ import {
     getTrashedNotes,
     restoreNote,
     permanentDeleteNote,
-    getArchivedNotes
+    getArchivedNotes,
+    updateNote
 } from '../api/notesApi'
 
 const DashboardPage = () => {
     const { token } = useAuth()
 
-    // State
     const [notes, setNotes] = useState([])
     const [archivedNotes, setArchivedNotes] = useState([])
     const [trashedNotes, setTrashedNotes] = useState([])
@@ -26,14 +27,13 @@ const DashboardPage = () => {
     const [search, setSearch] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [activeTab, setActiveTab] = useState('notes')
+    const [editingNote, setEditingNote] = useState(null)
 
-    // New note form state
     const [newTitle, setNewTitle] = useState('')
     const [newContent, setNewContent] = useState('')
     const [newTags, setNewTags] = useState('')
     const [creating, setCreating] = useState(false)
 
-    // Fetch all notes on mount
     useEffect(() => {
         fetchAllNotes()
     }, [])
@@ -56,7 +56,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Create note
     const handleCreate = async (e) => {
         e.preventDefault()
         if (!newTitle.trim()) return
@@ -78,7 +77,6 @@ const DashboardPage = () => {
             setNewContent('')
             setNewTags('')
             setShowForm(false)
-
         } catch (err) {
             setError('Failed to create note')
         } finally {
@@ -86,7 +84,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Pin / Unpin
     const handlePin = async (id) => {
         try {
             const data = await togglePin(id, token)
@@ -100,7 +97,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Archive — removes from notes, adds to archived
     const handleArchive = async (id) => {
         try {
             await toggleArchive(id, token)
@@ -114,7 +110,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Unarchive — removes from archived, adds back to notes
     const handleUnarchive = async (id) => {
         try {
             await toggleArchive(id, token)
@@ -128,7 +123,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Move to trash
     const handleDelete = async (id) => {
         try {
             await deleteNote(id, token)
@@ -145,7 +139,19 @@ const DashboardPage = () => {
         }
     }
 
-    // Restore from trash
+    const handleUpdate = async (id, updatedData) => {
+        try {
+            const data = await updateNote(id, updatedData, token)
+            setNotes(prev => prev.map(note =>
+                note._id === id
+                    ? { ...note, ...data.note }
+                    : note
+            ))
+        } catch (err) {
+            setError('Failed to update note')
+        }
+    }
+
     const handleRestore = async (id) => {
         try {
             await restoreNote(id, token)
@@ -162,7 +168,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Permanent delete
     const handlePermanentDelete = async (id) => {
         try {
             await permanentDeleteNote(id, token)
@@ -172,7 +177,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Filter notes by search
     const filteredNotes = notes.filter(note =>
         note.title.toLowerCase().includes(search.toLowerCase()) ||
         note.content.toLowerCase().includes(search.toLowerCase())
@@ -209,7 +213,7 @@ const DashboardPage = () => {
                     </button>
                 </div>
 
-                {/* Search + Create — only on notes tab */}
+                {/* Search + Create */}
                 {activeTab === 'notes' && (
                     <div style={styles.toolbar}>
                         <input
@@ -296,6 +300,7 @@ const DashboardPage = () => {
                                                     onPin={handlePin}
                                                     onArchive={handleArchive}
                                                     onDelete={handleDelete}
+                                                    onEdit={setEditingNote}
                                                 />
                                             ))}
                                         </div>
@@ -315,6 +320,7 @@ const DashboardPage = () => {
                                                     onPin={handlePin}
                                                     onArchive={handleArchive}
                                                     onDelete={handleDelete}
+                                                    onEdit={setEditingNote}
                                                 />
                                             ))}
                                         </div>
@@ -355,6 +361,7 @@ const DashboardPage = () => {
                                                     onPin={handlePin}
                                                     onArchive={handleUnarchive}
                                                     onDelete={handleDelete}
+                                                    onEdit={setEditingNote}
                                                 />
                                             ))}
                                         </div>
@@ -413,6 +420,14 @@ const DashboardPage = () => {
                 )}
 
             </div>
+
+            {/* Edit Modal — outside container, renders on top of everything */}
+            <EditNoteModal
+                note={editingNote}
+                onSave={handleUpdate}
+                onClose={() => setEditingNote(null)}
+            />
+
         </div>
     )
 }
