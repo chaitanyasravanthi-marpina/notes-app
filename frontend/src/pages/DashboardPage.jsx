@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import Navbar from '../components/Navbar'
 import NoteCard from '../components/NoteCard'
 import EditNoteModal from '../components/EditNoteModal'
@@ -18,17 +19,16 @@ import {
 
 const DashboardPage = () => {
     const { token } = useAuth()
+    const { showToast } = useToast()
 
     const [notes, setNotes] = useState([])
     const [archivedNotes, setArchivedNotes] = useState([])
     const [trashedNotes, setTrashedNotes] = useState([])
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState('')
     const [search, setSearch] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [activeTab, setActiveTab] = useState('notes')
     const [editingNote, setEditingNote] = useState(null)
-
     const [newTitle, setNewTitle] = useState('')
     const [newContent, setNewContent] = useState('')
     const [newTags, setNewTags] = useState('')
@@ -50,7 +50,7 @@ const DashboardPage = () => {
             setTrashedNotes(trashData.notes)
             setArchivedNotes(archiveData.notes)
         } catch (err) {
-            setError('Failed to load notes')
+            showToast('Failed to load notes', 'error')
         } finally {
             setLoading(false)
         }
@@ -59,26 +59,24 @@ const DashboardPage = () => {
     const handleCreate = async (e) => {
         e.preventDefault()
         if (!newTitle.trim()) return
-
         setCreating(true)
         try {
             const tagsArray = newTags
                 .split(',')
                 .map(t => t.trim())
                 .filter(t => t !== '')
-
             const data = await createNote(
                 { title: newTitle, content: newContent, tags: tagsArray },
                 token
             )
-
             setNotes(prev => [data.note, ...prev])
             setNewTitle('')
             setNewContent('')
             setNewTags('')
             setShowForm(false)
+            showToast('Note created successfully')
         } catch (err) {
-            setError('Failed to create note')
+            showToast('Failed to create note', 'error')
         } finally {
             setCreating(false)
         }
@@ -92,8 +90,9 @@ const DashboardPage = () => {
                     ? { ...note, isPinned: data.isPinned }
                     : note
             ))
+            showToast(data.isPinned ? 'Note pinned' : 'Note unpinned')
         } catch (err) {
-            setError('Failed to pin note')
+            showToast('Failed to pin note', 'error')
         }
     }
 
@@ -105,8 +104,9 @@ const DashboardPage = () => {
             if (note) {
                 setArchivedNotes(prev => [{ ...note, isArchived: true }, ...prev])
             }
+            showToast('Note archived')
         } catch (err) {
-            setError('Failed to archive note')
+            showToast('Failed to archive note', 'error')
         }
     }
 
@@ -118,8 +118,9 @@ const DashboardPage = () => {
             if (note) {
                 setNotes(prev => [{ ...note, isArchived: false }, ...prev])
             }
+            showToast('Note unarchived')
         } catch (err) {
-            setError('Failed to unarchive note')
+            showToast('Failed to unarchive note', 'error')
         }
     }
 
@@ -134,8 +135,9 @@ const DashboardPage = () => {
                     ...prev
                 ])
             }
+            showToast('Note moved to trash')
         } catch (err) {
-            setError('Failed to delete note')
+            showToast('Failed to delete note', 'error')
         }
     }
 
@@ -147,8 +149,9 @@ const DashboardPage = () => {
                     ? { ...note, ...data.note }
                     : note
             ))
+            showToast('Note updated successfully')
         } catch (err) {
-            setError('Failed to update note')
+            showToast('Failed to update note', 'error')
         }
     }
 
@@ -163,8 +166,9 @@ const DashboardPage = () => {
                     ...prev
                 ])
             }
+            showToast('Note restored successfully')
         } catch (err) {
-            setError('Failed to restore note')
+            showToast('Failed to restore note', 'error')
         }
     }
 
@@ -172,8 +176,9 @@ const DashboardPage = () => {
         try {
             await permanentDeleteNote(id, token)
             setTrashedNotes(prev => prev.filter(n => n._id !== id))
+            showToast('Note permanently deleted', 'info')
         } catch (err) {
-            setError('Failed to permanently delete note')
+            showToast('Failed to delete note', 'error')
         }
     }
 
@@ -265,19 +270,6 @@ const DashboardPage = () => {
                             {creating ? 'Creating...' : 'Create Note'}
                         </button>
                     </form>
-                )}
-
-                {/* Error */}
-                {error && (
-                    <div style={styles.error}>
-                        {error}
-                        <button
-                            onClick={() => setError('')}
-                            style={styles.errorClose}
-                        >
-                            ✕
-                        </button>
-                    </div>
                 )}
 
                 {/* Content */}
@@ -421,7 +413,7 @@ const DashboardPage = () => {
 
             </div>
 
-            {/* Edit Modal — outside container, renders on top of everything */}
+            {/* Edit Modal */}
             <EditNoteModal
                 note={editingNote}
                 onSave={handleUpdate}
@@ -536,24 +528,6 @@ const styles = {
         fontSize: '15px',
         fontWeight: '600',
         cursor: 'not-allowed',
-    },
-    error: {
-        backgroundColor: '#fff0f0',
-        color: '#e53e3e',
-        padding: '12px 16px',
-        borderRadius: '8px',
-        marginBottom: '16px',
-        fontSize: '14px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    errorClose: {
-        background: 'none',
-        border: 'none',
-        color: '#e53e3e',
-        cursor: 'pointer',
-        fontSize: '16px',
     },
     center: {
         textAlign: 'center',
