@@ -20,6 +20,14 @@ import noteRoutes from './routes/noteRoutes.js'
 // Step 4: Create the Express application
 // This 'app' object is our entire server
 const app = express()
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',           // local development
+    process.env.FRONTEND_URL           // production frontend URL
+  ],
+  credentials: true,
+}
 
 // Step 5: Set up middleware
 // These run on EVERY incoming request, before any route handler
@@ -29,7 +37,7 @@ const app = express()
 app.use(express.json())
 
 // Allows cross-origin requests from our React frontend
-app.use(cors())
+app.use(cors(corsOptions))
 // ← ADD THIS — connect to database when server starts
 connectDB()
 
