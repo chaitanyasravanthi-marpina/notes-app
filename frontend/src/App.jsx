@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
+import { ThemeProvider } from './context/ThemeContext'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
@@ -34,13 +35,15 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 

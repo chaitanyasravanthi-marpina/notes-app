@@ -1,8 +1,10 @@
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
     const { user, logout } = useAuth()
+    const { isDark, toggleTheme } = useTheme()
     const navigate = useNavigate()
 
     const handleLogout = () => {
@@ -11,22 +13,54 @@ const Navbar = () => {
     }
 
     return (
-        <nav style={styles.nav}>
+        <nav style={{
+            ...styles.nav,
+            backgroundColor: 'var(--bg-secondary)',
+            borderBottom: '1px solid var(--border)',
+            boxShadow: `0 1px 3px var(--shadow)`,
+        }}>
             <div style={styles.inner}>
 
                 {/* Logo */}
-                <h1 style={styles.logo}>📝 NotesApp</h1>
+                <h1 style={{ ...styles.logo, color: 'var(--accent)' }}>
+                    📝 NotesApp
+                </h1>
 
-                {/* Right side — user info + logout */}
+                {/* Right side */}
                 <div style={styles.right}>
-                    <span style={styles.username}>
+
+                    {/* Dark mode toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        style={{
+                            ...styles.themeBtn,
+                            backgroundColor: 'var(--bg-tertiary)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
+                        }}
+                        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                    >
+                        {isDark ? '☀️ Light' : '🌙 Dark'}
+                    </button>
+
+                    {/* Username */}
+                    <span style={{ ...styles.username, color: 'var(--text-secondary)' }}>
                         👤 {user?.name}
                     </span>
-                    <button onClick={handleLogout} style={styles.logoutBtn}>
+
+                    {/* Logout */}
+                    <button
+                        onClick={handleLogout}
+                        style={{
+                            ...styles.logoutBtn,
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-secondary)',
+                        }}
+                    >
                         Logout
                     </button>
-                </div>
 
+                </div>
             </div>
         </nav>
     )
@@ -34,14 +68,11 @@ const Navbar = () => {
 
 const styles = {
     nav: {
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e5e7eb',
         padding: '0 24px',
         height: '64px',
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
     },
     inner: {
         maxWidth: '1200px',
@@ -54,25 +85,28 @@ const styles = {
     logo: {
         fontSize: '22px',
         fontWeight: '700',
-        color: '#4f46e5',
     },
     right: {
         display: 'flex',
         alignItems: 'center',
-        gap: '16px',
+        gap: '12px',
+    },
+    themeBtn: {
+        padding: '8px 14px',
+        borderRadius: '8px',
+        fontSize: '13px',
+        fontWeight: '500',
+        cursor: 'pointer',
     },
     username: {
         fontSize: '14px',
-        color: '#555',
         fontWeight: '500',
     },
     logoutBtn: {
         padding: '8px 16px',
         backgroundColor: 'transparent',
-        border: '1px solid #e5e7eb',
         borderRadius: '8px',
         fontSize: '14px',
-        color: '#555',
         cursor: 'pointer',
     },
 }

@@ -425,9 +425,10 @@ const DashboardPage = () => {
 }
 
 const styles = {
+    // Find these in styles object and update:
     page: {
         minHeight: '100vh',
-        backgroundColor: '#f0f2f5',
+        backgroundColor: 'var(--bg-primary)',  // ← was #f0f2f5
     },
     container: {
         maxWidth: '1200px',
@@ -441,12 +442,12 @@ const styles = {
     },
     tab: {
         padding: '10px 20px',
-        backgroundColor: '#ffffff',
-        border: '1px solid #e5e7eb',
+        backgroundColor: 'var(--bg-secondary)',
+        border: '1px solid var(--border)',
         borderRadius: '10px',
         fontSize: '14px',
         fontWeight: '500',
-        color: '#666',
+        color: 'var(--text-secondary)',
         cursor: 'pointer',
     },
     tabActive: {
@@ -467,10 +468,11 @@ const styles = {
     searchInput: {
         flex: 1,
         padding: '12px 16px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border)',
         borderRadius: '10px',
         fontSize: '15px',
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--bg-secondary)',
+        color: 'var(--text-primary)',
         fontFamily: 'inherit',
     },
     newNoteBtn: {
@@ -485,29 +487,33 @@ const styles = {
         whiteSpace: 'nowrap',
     },
     form: {
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--bg-secondary)',
         padding: '24px',
         borderRadius: '12px',
         marginBottom: '24px',
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+        boxShadow: `0 2px 8px var(--shadow)`,
     },
     formInput: {
         padding: '12px 16px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border)',
         borderRadius: '8px',
         fontSize: '15px',
         fontFamily: 'inherit',
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-primary)',
     },
     formTextarea: {
         padding: '12px 16px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border)',
         borderRadius: '8px',
         fontSize: '15px',
         fontFamily: 'inherit',
         resize: 'vertical',
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-primary)',
     },
     createBtn: {
         padding: '12px',
@@ -569,10 +575,10 @@ const styles = {
         fontStyle: 'italic',
     },
     trashCard: {
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--bg-secondary)',
         padding: '20px',
         borderRadius: '12px',
-        border: '1px solid #fee2e2',
+        border: '1px solid var(--border)',
         display: 'flex',
         flexDirection: 'column',
         gap: '10px',

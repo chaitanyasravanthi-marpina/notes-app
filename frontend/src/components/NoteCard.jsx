@@ -13,8 +13,11 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
     return (
         <div style={{
             ...styles.card,
-            backgroundColor: note.color || '#ffffff',
-            border: note.isPinned ? '2px solid #4f46e5' : '1px solid #e5e7eb'
+            backgroundColor: note.color || 'var(--bg-secondary)',
+            border: note.isPinned
+                ? '2px solid var(--accent)'
+                : '1px solid var(--border)',
+            boxShadow: `0 2px 8px var(--shadow)`,
         }}>
 
             {/* Pin indicator */}
@@ -116,12 +119,12 @@ const styles = {
     title: {
         fontSize: '16px',
         fontWeight: '600',
-        color: '#1a1a1a',
+        color: 'var(--text-primary)',
         lineHeight: '1.4',
     },
     content: {
         fontSize: '14px',
-        color: '#555',
+        color: 'var(--text-secondary)',
         lineHeight: '1.6',
     },
     tags: {
@@ -145,7 +148,7 @@ const styles = {
     },
     date: {
         fontSize: '12px',
-        color: '#999',
+        color: 'var(--text-muted)',
     },
     actions: {
         display: 'flex',
