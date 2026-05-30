@@ -14,7 +14,8 @@ import {
     restoreNote,
     permanentDeleteNote,
     getArchivedNotes,
-    updateNote
+    updateNote,
+    changeNoteColor
 } from '../api/notesApi'
 
 const DashboardPage = () => {
@@ -152,6 +153,19 @@ const DashboardPage = () => {
             showToast('Note updated successfully')
         } catch (err) {
             showToast('Failed to update note', 'error')
+        }
+    }
+
+    const handleColorChange = async (id, color) => {
+        try {
+            const data = await changeNoteColor(id, color, token)
+            setNotes(prev => prev.map(note =>
+                note._id === id
+                    ? { ...note, color: data.note.color }
+                    : note
+            ))
+        } catch (err) {
+            showToast('Failed to change color', 'error')
         }
     }
 
@@ -293,6 +307,7 @@ const DashboardPage = () => {
                                                     onArchive={handleArchive}
                                                     onDelete={handleDelete}
                                                     onEdit={setEditingNote}
+                                                    onColorChange={handleColorChange}
                                                 />
                                             ))}
                                         </div>
@@ -313,6 +328,7 @@ const DashboardPage = () => {
                                                     onArchive={handleArchive}
                                                     onDelete={handleDelete}
                                                     onEdit={setEditingNote}
+                                                    onColorChange={handleColorChange}
                                                 />
                                             ))}
                                         </div>
@@ -354,6 +370,7 @@ const DashboardPage = () => {
                                                     onArchive={handleUnarchive}
                                                     onDelete={handleDelete}
                                                     onEdit={setEditingNote}
+                                                    onColorChange={handleColorChange}
                                                 />
                                             ))}
                                         </div>
@@ -425,10 +442,9 @@ const DashboardPage = () => {
 }
 
 const styles = {
-    // Find these in styles object and update:
     page: {
         minHeight: '100vh',
-        backgroundColor: 'var(--bg-primary)',  // ← was #f0f2f5
+        backgroundColor: 'var(--bg-primary)',
     },
     container: {
         maxWidth: '1200px',
@@ -452,8 +468,8 @@ const styles = {
     },
     tabActive: {
         padding: '10px 20px',
-        backgroundColor: '#4f46e5',
-        border: '1px solid #4f46e5',
+        backgroundColor: 'var(--accent)',
+        border: '1px solid var(--accent)',
         borderRadius: '10px',
         fontSize: '14px',
         fontWeight: '500',
@@ -477,7 +493,7 @@ const styles = {
     },
     newNoteBtn: {
         padding: '12px 20px',
-        backgroundColor: '#4f46e5',
+        backgroundColor: 'var(--accent)',
         color: '#ffffff',
         border: 'none',
         borderRadius: '10px',
@@ -494,7 +510,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        boxShadow: `0 2px 8px var(--shadow)`,
+        boxShadow: '0 2px 8px var(--shadow)',
     },
     formInput: {
         padding: '12px 16px',
@@ -517,7 +533,7 @@ const styles = {
     },
     createBtn: {
         padding: '12px',
-        backgroundColor: '#4f46e5',
+        backgroundColor: 'var(--accent)',
         color: '#ffffff',
         border: 'none',
         borderRadius: '8px',
@@ -527,7 +543,7 @@ const styles = {
     },
     btnDisabled: {
         padding: '12px',
-        backgroundColor: '#a5b4fc',
+        backgroundColor: 'var(--accent-muted)',
         color: '#ffffff',
         border: 'none',
         borderRadius: '8px',
@@ -538,7 +554,7 @@ const styles = {
     center: {
         textAlign: 'center',
         padding: '60px',
-        color: '#999',
+        color: 'var(--text-muted)',
     },
     section: {
         marginBottom: '32px',
@@ -546,7 +562,7 @@ const styles = {
     sectionTitle: {
         fontSize: '14px',
         fontWeight: '600',
-        color: '#999',
+        color: 'var(--text-muted)',
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
         marginBottom: '16px',
@@ -566,11 +582,11 @@ const styles = {
     },
     emptyText: {
         fontSize: '16px',
-        color: '#999',
+        color: 'var(--text-muted)',
     },
     tabHint: {
         fontSize: '13px',
-        color: '#999',
+        color: 'var(--text-muted)',
         marginBottom: '16px',
         fontStyle: 'italic',
     },
@@ -586,12 +602,12 @@ const styles = {
     trashTitle: {
         fontSize: '16px',
         fontWeight: '600',
-        color: '#999',
+        color: 'var(--text-muted)',
         textDecoration: 'line-through',
     },
     trashContent: {
         fontSize: '14px',
-        color: '#bbb',
+        color: 'var(--text-muted)',
     },
     trashActions: {
         display: 'flex',

@@ -1,6 +1,20 @@
-const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
+import { useState } from 'react'
 
-    // Format date nicely
+// Color palette — carefully chosen colors that work in both light and dark mode
+const COLORS = [
+    { value: '#ffffff', label: 'White' },
+    { value: '#fef9c3', label: 'Yellow' },
+    { value: '#dcfce7', label: 'Green' },
+    { value: '#dbeafe', label: 'Blue' },
+    { value: '#fce7f3', label: 'Pink' },
+    { value: '#ede9fe', label: 'Purple' },
+    { value: '#ffedd5', label: 'Orange' },
+    { value: '#f1f5f9', label: 'Gray' },
+]
+
+const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit, onColorChange }) => {
+    const [showColors, setShowColors] = useState(false)
+
     const formatDate = (dateString) => {
         const date = new Date(dateString)
         return date.toLocaleDateString('en-US', {
@@ -10,14 +24,20 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
         })
     }
 
+    const handleColorSelect = (color) => {
+        onColorChange(note._id, color)
+        setShowColors(false)
+    }
+
     return (
         <div style={{
             ...styles.card,
-            backgroundColor: note.color || 'var(--bg-secondary)',
+            backgroundColor: note.color || '#ffffff',
             border: note.isPinned
                 ? '2px solid var(--accent)'
                 : '1px solid var(--border)',
             boxShadow: `0 2px 8px var(--shadow)`,
+            position: 'relative',
         }}>
 
             {/* Pin indicator */}
@@ -49,6 +69,26 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
                 </div>
             )}
 
+            {/* Color palette — shows when palette button clicked */}
+            {showColors && (
+                <div style={styles.colorPalette}>
+                    {COLORS.map(color => (
+                        <button
+                            key={color.value}
+                            onClick={() => handleColorSelect(color.value)}
+                            title={color.label}
+                            style={{
+                                ...styles.colorDot,
+                                backgroundColor: color.value,
+                                border: note.color === color.value
+                                    ? '2px solid var(--accent)'
+                                    : '2px solid var(--border)',
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+
             {/* Footer — date + actions */}
             <div style={styles.footer}>
                 <span style={styles.date}>
@@ -57,7 +97,7 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
 
                 <div style={styles.actions}>
 
-                    {/* Edit button — passes full note object to parent */}
+                    {/* Edit */}
                     <button
                         onClick={() => onEdit(note)}
                         style={styles.actionBtn}
@@ -66,7 +106,16 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
                         ✏️
                     </button>
 
-                    {/* Pin button */}
+                    {/* Color picker toggle */}
+                    <button
+                        onClick={() => setShowColors(prev => !prev)}
+                        style={styles.actionBtn}
+                        title="Change color"
+                    >
+                        🎨
+                    </button>
+
+                    {/* Pin */}
                     <button
                         onClick={() => onPin(note._id)}
                         style={styles.actionBtn}
@@ -75,7 +124,7 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
                         {note.isPinned ? '📍' : '📌'}
                     </button>
 
-                    {/* Archive button */}
+                    {/* Archive */}
                     <button
                         onClick={() => onArchive(note._id)}
                         style={styles.actionBtn}
@@ -84,7 +133,7 @@ const NoteCard = ({ note, onPin, onArchive, onDelete, onEdit }) => {
                         🗃️
                     </button>
 
-                    {/* Delete button */}
+                    {/* Delete */}
                     <button
                         onClick={() => onDelete(note._id)}
                         style={styles.actionBtn}
@@ -104,7 +153,6 @@ const styles = {
     card: {
         padding: '20px',
         borderRadius: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
@@ -113,7 +161,7 @@ const styles = {
     },
     pinnedBadge: {
         fontSize: '11px',
-        color: '#4f46e5',
+        color: 'var(--accent)',
         fontWeight: '600',
     },
     title: {
@@ -134,11 +182,27 @@ const styles = {
     },
     tag: {
         fontSize: '12px',
-        color: '#4f46e5',
-        backgroundColor: '#eef2ff',
+        color: 'var(--accent)',
+        backgroundColor: 'var(--accent-light)',
         padding: '2px 8px',
         borderRadius: '12px',
         fontWeight: '500',
+    },
+    colorPalette: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '8px',
+        padding: '10px',
+        backgroundColor: 'var(--bg-secondary)',
+        borderRadius: '10px',
+        border: '1px solid var(--border)',
+    },
+    colorDot: {
+        width: '28px',
+        height: '28px',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        transition: 'transform 0.15s',
     },
     footer: {
         display: 'flex',
@@ -152,7 +216,7 @@ const styles = {
     },
     actions: {
         display: 'flex',
-        gap: '4px',
+        gap: '2px',
     },
     actionBtn: {
         background: 'none',
@@ -160,7 +224,7 @@ const styles = {
         padding: '4px 6px',
         borderRadius: '6px',
         cursor: 'pointer',
-        fontSize: '16px',
+        fontSize: '15px',
     },
 }
 

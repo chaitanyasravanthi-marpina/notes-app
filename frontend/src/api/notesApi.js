@@ -90,3 +90,11 @@ export const getArchivedNotes = async (token) => {
   )
   return response.data
 }
+export const changeNoteColor = async (id, color, token) => {
+  const response = await axios.put(
+    `${BASE_URL}/notes/${id}`,
+    { color },
+    authHeaders(token)
+  )
+  return response.data
+}
